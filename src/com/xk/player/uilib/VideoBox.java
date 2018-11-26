@@ -1,0 +1,64 @@
+package com.xk.player.uilib;
+
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.layout.FillLayout;
+
+public class VideoBox extends MessageBox{
+
+	protected Object result;
+	protected Shell shell;
+
+	/**
+	 * Create the dialog.
+	 * @param parent
+	 * @param style
+	 */
+	public VideoBox(Shell parent, int style) {
+		super(parent, style);
+		createContents(280, 360);
+	}
+
+	/**
+	 * Open the dialog.
+	 * @return the result
+	 */
+	public Object open(int x,int y) {
+		
+		shell.open();
+		shell.layout();
+		Display display = getParent().getDisplay();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) {
+				display.sleep();
+			}
+		}
+		return result;
+	}
+	//重要。这样就可以重写swt组件
+	public void checkSubclass(){}
+	//去掉原始open方法
+	public int open(){
+		return 0;
+	}
+
+	/**
+	 * Create contents of the dialog.
+	 */
+	private void createContents(int x,int y) {
+		shell = new Shell(getParent(), getStyle());
+		shell.setSize(280, 360);
+		shell.setText(getText());
+		shell.setLayout(new FillLayout());
+	}
+	
+	public void setText(String text){
+		shell.setText(text);
+	}
+	
+	public Shell getShell(){
+		return shell;
+	}
+
+}
