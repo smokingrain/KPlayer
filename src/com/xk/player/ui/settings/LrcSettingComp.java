@@ -212,7 +212,9 @@ public class LrcSettingComp extends SettingParent {
 	}
 	
 	private void selectFont(Label name, Label style, Label selector) {
+		FontData init = (FontData) selector.getData();
 		FontDialog fd = new FontDialog(getShell(), SWT.NONE);
+		fd.setFontList(new FontData[]{init});
 		FontData fDate = fd.open();
 		if(null != fDate) {
 			selector.setData(fDate);

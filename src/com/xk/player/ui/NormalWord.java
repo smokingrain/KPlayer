@@ -167,7 +167,7 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 		if(config.isDied()) {
 			config = Config.getInstance();
 		}
-		Font ft=SWTResourceManager.getFont( "楷体", 22,SWT.NORMAL);
+		Font ft=SWTResourceManager.getFont( "楷体", config.fontSize, SWT.NORMAL);
 		Point songWidth=g.stringExtent(songName);
         g.setFont(ft);
         g.setForeground(SWTResourceManager.getColor(config.br, config.bg, config.bb));
@@ -207,7 +207,7 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 			return;
 		}
 		float[] dashList = new float[]{255,255};
-		Font ft = SWTResourceManager.getFont(config.fontName, 22, config.fontStyle);
+		Font ft = SWTResourceManager.getFont(config.fontName, config.fontSize, config.fontStyle);
         g.setFont(ft);
         g.setForeground(SWTResourceManager.getColor(config.br, config.bg, config.bb));
         g.setBackground(SWTResourceManager.getColor(config.br, config.bg, config.bb));
