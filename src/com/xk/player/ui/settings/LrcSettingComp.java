@@ -246,7 +246,8 @@ public class LrcSettingComp extends SettingParent {
 		FontData fd = (FontData) bSelector.getData();
 		config.fontName = fd.getName();
 		config.fontStyle = fd.getStyle();
-		config.fontSize = fd.getHeight();
+		int size = fd.getHeight();
+		config.fontSize = size > 22 ? 22 : size;
 		Color backDesk = lbColorDesk.getBackground();
 		config.dbr = backDesk.getRed();
 		config.dbg = backDesk.getGreen();
@@ -258,7 +259,8 @@ public class LrcSettingComp extends SettingParent {
 		FontData fdDesk = (FontData) bSelectorDesk.getData();
 		config.dfontName = fdDesk.getName();
 		config.dfontStyle = fdDesk.getStyle();
-		config.dfontSize = fdDesk.getHeight();
+		int dsize = fdDesk.getHeight();
+		config.dfontSize = dsize > 36 ? 36 : dsize;
 	}
 
 	@Override
