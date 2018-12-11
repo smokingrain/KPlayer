@@ -108,13 +108,14 @@ public class SettingComp extends Composite implements ICallable{
 	 * @date 2016年10月17日
 	 */
 	private void createComps() {
-		Image img=SWTResourceManager.getImage(getClass(), "/images/lrcsetting.png");
-		SettingItem song=new SettingItem(img, "歌词设置");
-		left.addItem(song);
 		
 		Image down=SWTResourceManager.getImage(getClass(), "/images/download.png");
 		SettingItem download=new SettingItem(down, "下载设置");
 		left.addItem(download);
+		
+		Image img=SWTResourceManager.getImage(getClass(), "/images/lrcsetting.png");
+		SettingItem song=new SettingItem(img, "歌词设置");
+		left.addItem(song);
 		
 		Composite content = new Composite(this, SWT.NONE);
 		content.setBounds(116, 33, 324, 247);

@@ -29,6 +29,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
+import org.jsoup.helper.StringUtil;
 
 import sun.misc.BASE64Encoder;
 
@@ -273,7 +274,7 @@ public class NetEasySource implements IDownloadSource {
 	@Override
 	public List<SearchInfo> getMV(String name) {
 		List<SearchInfo> rst = new ArrayList<IDownloadSource.SearchInfo>();
-		Map<String, Object> info = search(name, "1004");
+		Map<String, Object> info = search(name, "1014");
 		if(null == info) {
 			return rst;
 		}
@@ -281,7 +282,7 @@ public class NetEasySource implements IDownloadSource {
 		if(null == result) {
 			return rst;
 		}
-		List<Map<String, Object>> mvs = (List<Map<String, Object>>) result.get("mvs");
+		List<Map<String, Object>> mvs = (List<Map<String, Object>>) result.get("videos");
 		if(null == mvs) {
 			return rst;
 		}
@@ -293,49 +294,64 @@ public class NetEasySource implements IDownloadSource {
 					if(urlFound) {
 						return url;
 					}
+					Map<String, Object> paramsDetail = new HashMap<String, Object>();
+					paramsDetail.put("id", url);
+					String jsonDetail = JSONUtil.toJson(paramsDetail);
+					Map<String, String> pDetail = EncryptUtils.encrypt(jsonDetail);
+					List<BasicNameValuePair> fromparamsDetail = new ArrayList<BasicNameValuePair>();
+					fromparamsDetail.add(new BasicNameValuePair("params", pDetail.get("params")));
+					fromparamsDetail.add(new BasicNameValuePair("encSecKey", pDetail.get("encSecKey")));
+					
+					String targetDetail = "https://music.163.com/weapi/cloudvideo/v1/video/detail";
+					String dataDetail = post(targetDetail, fromparamsDetail);
+					Map<String, Object> resultDetail = JSONUtil.fromJson(dataDetail);
+					if(null == resultDetail) {
+						return null;
+					}
+					Map<String, Object> dtDetail = (Map<String, Object>) resultDetail.get("data");
+					if(null == dtDetail) {
+						return null;
+					}
+					
+					
 					Map<String, Object> params = new HashMap<String, Object>();
-					params.put("id", url);
+					List<String> ids = new ArrayList<String>();
+					ids.add(url);
+					params.put("ids", JSONUtil.toJson(ids));
+					params.put("resolution", "480");
 					params.put("csrf_token", "");
 					String json = JSONUtil.toJson(params);
 					Map<String, String> p = EncryptUtils.encrypt(json);
 					List<BasicNameValuePair> fromparams = new ArrayList<BasicNameValuePair>();
 					fromparams.add(new BasicNameValuePair("params", p.get("params")));
 					fromparams.add(new BasicNameValuePair("encSecKey", p.get("encSecKey")));
-					fromparams.add(new BasicNameValuePair("type", "mp4"));
-					fromparams.add(new BasicNameValuePair("id", url));
-					String target = "https://music.163.com/api/mv/detail";
+//					fromparams.add(new BasicNameValuePair("csrf_token", ""));
+//					fromparams.add(new BasicNameValuePair("vid", url));
+					String target = "https://music.163.com/weapi/cloudvideo/playurl";
 					String data = post(target, fromparams);
 					Map<String, Object> result = JSONUtil.fromJson(data);
 					if(null == result) {
 						return null;
 					}
-					Map<String, Object> dt = (Map<String, Object>) result.get("data");
-					if(null == dt) {
+					List<Map<String, Object>> urls = (List<Map<String, Object>>) result.get("urls");
+					if(null == urls) {
 						return null;
 					}
-					Map<String, String> brs = (Map<String, String>) dt.get("brs");
-					if(null == brs) {
-						return null;
-					}
-					String[] fbls = new String[]{"1080", "720", "480", "240"};
-					for(String fbl : fbls) {
-						String finalUrl = brs.get(fbl);
-						if(null != finalUrl) {
-							finalUrl = finalUrl.replace("http://", "https://");
-							this.flashVars.clear();
-							this.flashVars.put("hurl", "");
-							this.flashVars.put("autoPlay", "true");
-							this.flashVars.put("murl", finalUrl);
-							this.flashVars.put("trackName", (String)dt.get("name"));
-							this.flashVars.put("artistName", (String)dt.get("artistName"));
-							this.flashVars.put("resourceId", dt.get("id").toString());
-							this.flashVars.put("coverImg", (String)dt.get("cover"));
-							this.flashVars.put("restrict", "false");
-							this.swfUrl = "https://s1.music.126.net/style/swf/MVPlayer_fee.swf?v=20170527";
-							urlFound = true;
-							url = finalUrl;
-							return finalUrl;
-						}
+					for(Map<String, Object> urlMap : urls) {
+						String finalUrl = (String) urlMap.get("url");
+						this.flashVars.clear();
+						this.flashVars.put("hurl", finalUrl);
+						this.flashVars.put("autoPlay", "true");
+						this.flashVars.put("murl", finalUrl);
+						this.flashVars.put("trackName", (String)dtDetail.get("title"));
+						this.flashVars.put("artistName", (String)((Map<String, Object>)dtDetail.get("creator")).get("nickname"));
+						this.flashVars.put("resourceId", (String)dtDetail.get("vid"));
+						this.flashVars.put("coverImg", (String)dtDetail.get("coverUrl"));
+						this.flashVars.put("restrict", "false");
+						this.swfUrl = "https://s1.music.126.net/style/swf/MVPlayer_fee.swf?v=20170527";
+						urlFound = true;
+						url = finalUrl;
+						return finalUrl;
 					}
 					
 					return null;
@@ -347,10 +363,15 @@ public class NetEasySource implements IDownloadSource {
 				}
 				
 			};
-			si.name = (String) mv.get("name");
+			si.name = (String) mv.get("title");
 			si.type = "mv";
-			si.singer = (String) mv.get("artistName");
-			si.url = mv.get("id").toString();
+			List<Map<String, Object>> creators = (List<Map<String, Object>>) mv.get("creator");
+			List<String> listCreators = new ArrayList<String>();
+			for(Map<String, Object> creator : creators) {
+				listCreators.add(creator.get("userName").toString());
+			}
+			si.singer = StringUtil.join(listCreators, "、");
+			si.url = mv.get("vid").toString();
 			rst.add(si);
 		}
 		return rst;

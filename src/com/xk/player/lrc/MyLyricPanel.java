@@ -155,7 +155,7 @@ public class MyLyricPanel extends JPanel implements Runnable , BasicPlayerListen
     	if(cur != lastCur) {
     		isUp=!isUp;
     	}
-    	Font ft=new Font(config.dfontName, config.dfontStyle, 36);
+    	Font ft=new Font(config.dfontName, config.dfontStyle, config.dfontSize);
     	g.setFont(ft);
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,RenderingHints.VALUE_ANTIALIAS_ON);//抗锯齿
 		XRCLine currentLine=lines.get(cur);

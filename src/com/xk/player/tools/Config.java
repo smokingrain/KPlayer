@@ -46,10 +46,12 @@ public class Config implements Cloneable{
 	//歌词字体
 	public String fontName="楷体";
 	public int fontStyle=SWT.NORMAL;
+	public int fontSize=22;
 	
 	//桌面歌词字体
 	public String dfontName="楷体";
 	public int dfontStyle=Font.PLAIN;
+	public int dfontSize=36;
 	
 	//下载路径
 	public String downloadPath=System.getProperty("user.dir");

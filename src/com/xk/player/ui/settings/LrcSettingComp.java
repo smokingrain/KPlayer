@@ -246,6 +246,7 @@ public class LrcSettingComp extends SettingParent {
 		FontData fd = (FontData) bSelector.getData();
 		config.fontName = fd.getName();
 		config.fontStyle = fd.getStyle();
+		config.fontSize = fd.getHeight();
 		Color backDesk = lbColorDesk.getBackground();
 		config.dbr = backDesk.getRed();
 		config.dbg = backDesk.getGreen();
@@ -257,6 +258,7 @@ public class LrcSettingComp extends SettingParent {
 		FontData fdDesk = (FontData) bSelectorDesk.getData();
 		config.dfontName = fdDesk.getName();
 		config.dfontStyle = fdDesk.getStyle();
+		config.dfontSize = fdDesk.getHeight();
 	}
 
 	@Override
@@ -265,7 +267,7 @@ public class LrcSettingComp extends SettingParent {
 		Color proce = new Color(null, config.cr, config.cg, config.cb);
 		lbColor.setBackground(back);
 		ljColor.setBackground(proce);
-		Font ft = new Font(null, config.fontName, 16, config.fontStyle);
+		Font ft = new Font(null, config.fontName, config.fontSize, config.fontStyle);
 		bSelector.setData(ft.getFontData()[0]);
 		lFontName.setText(config.fontName);
 		switch(config.fontStyle) {
@@ -284,7 +286,7 @@ public class LrcSettingComp extends SettingParent {
 		lbColorDesk.setBackground(backDesk);
 		Color proceDesk = new Color(null, config.dcr, config.dcg, config.dcb);
 		ljColorDesk.setBackground(proceDesk);
-		Font fontDesk = new Font(null, config.dfontName, 16, config.dfontStyle);
+		Font fontDesk = new Font(null, config.dfontName, config.dfontSize, config.dfontStyle);
 		bSelectorDesk.setData(fontDesk.getFontData()[0]);
 		lFontNameDesk.setText(config.dfontName);
 		switch(config.dfontStyle) {

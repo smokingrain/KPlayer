@@ -29,12 +29,12 @@ public class SongSearchItem extends LTableItem {
 	
 	@Override
 	public boolean oncliek(MouseEvent e, int itemHeight, int index, int type) {
-		if(type == MyList.CLICK_DOUBLE) {
-			download();
+		if(type == MyList.CLICK_DOUBLE && !head) {
+			PlayUI.getInstance().addTryListen(info);
 			return true;
 		}
 		//右键菜单
-		if(e.button == 3 && !head && SourceFactory.getSource(info.getSource()).tryListenSupport()) {
+		if(type == MyList.CLICK_DOUBLE && !head && SourceFactory.getSource(info.getSource()).tryListenSupport()) {
 			Menu m=new Menu(getParent());
 			Menu menu=getParent().getMenu();
 			if (menu != null) {
