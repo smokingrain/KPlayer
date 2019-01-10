@@ -169,7 +169,7 @@ public abstract class WriteOnReadInputStream extends InputStream {
 	 * @param target
 	 * @author kui.xiao
 	 */
-	private void bufferData(File target) {
+	private void bufferData(final File target) {
 		new Thread(new Runnable() {
 			
 			@Override

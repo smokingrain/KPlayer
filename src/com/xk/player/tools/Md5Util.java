@@ -3,11 +3,9 @@ package com.xk.player.tools;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.sun.xml.internal.ws.util.StringUtils;
 
 
 public class Md5Util {

@@ -197,18 +197,6 @@ public abstract class RenamingFileFilter implements FileFilter
 		return result.toString();
 	}
 
-	// public static void main(String args[])
-	// {
-	// String s = "SinéAd O'connor";
-	// {
-	//
-	// Debug.debug("toTitleCase", new MusicOrganizerFilter()
-	// .toTitleCase(s));
-	// Debug.debug("getNewName2", new MusicOrganizerFilter()
-	// .getNewName2(s));
-	// }
-	// // new MusicOrganizerFilter().toTitleCase("SinéAd O'connor");
-	// }
 
 	protected String insertSpacesBeforeCaps(String s)
 	{
