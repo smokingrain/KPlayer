@@ -39,7 +39,7 @@ public class SearchComp extends Composite implements ICallable{
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.keyCode == SWT.CR) {
-					String str=text.getText();
+					String str=text.getText().trim();
 					if(!str.isEmpty()){
 						callback.callback(str);
 					}
