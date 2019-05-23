@@ -433,6 +433,9 @@ public class MyList extends Composite {
 				listener.itemRemove(event);
 			}
 			items.remove(index);
+			for(ItemListener listener:itemListeners){
+				listener.itemRemoved(event);
+			}
 			removed.unSelect();
 			removed.setParent(null);
 			countHeight();

@@ -205,6 +205,9 @@ public class HTTPUtil {
 			    	return location;
 				}
 				return null;
+			} else if(400 <= response.getStatusLine().getStatusCode()){
+				response.close();
+				return null;
 			}else{
 				HttpEntity entity = response.getEntity();  
 				SongLocation location = new SongLocation();

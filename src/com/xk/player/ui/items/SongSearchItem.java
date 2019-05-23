@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.MenuItem;
 
 import com.xk.player.tools.Config;
 import com.xk.player.tools.SongLocation;
+import com.xk.player.tools.Util;
 import com.xk.player.tools.sources.IDownloadSource.SearchInfo;
 import com.xk.player.tools.SourceFactory;
 import com.xk.player.ui.PlayUI;
@@ -73,9 +74,7 @@ public class SongSearchItem extends LTableItem {
 				String url = info.getUrl();
 				SongLocation loc = SourceFactory.getSource(info.getSource()).getInputStream(url);
 				if(null == loc) {
-					loc = SourceFactory.getSource(info.getSource()).getInputStream(url);
-				}
-				if(null == loc) {
+					downloadFailed("下载失败，可能是版权问题导致。");
 					downloading=false;
 					flush();
 					return;
@@ -86,7 +85,9 @@ public class SongSearchItem extends LTableItem {
 					conf.downloadPath = parent;
 					conf.lrcPath = parent;
 				}
+				boolean succ = true;
 				File file = new File(conf.downloadPath, info.singer + " - " + info.name + "." + info.type);
+				String realPath = file.getAbsolutePath();
 				if(!file.exists()){
 					FileOutputStream out = null;
 					try {
@@ -107,6 +108,7 @@ public class SongSearchItem extends LTableItem {
 						}
 					} catch (Exception e) {
 						System.out.println("download failed!"+e.getMessage());
+						succ = false;
 					}finally{
 						if(null!=out){
 							try {
@@ -117,6 +119,11 @@ public class SongSearchItem extends LTableItem {
 							}
 						}
 					}
+					if("m4a".equals(info.type)) {
+						realPath = new File(conf.downloadPath, info.singer + " - " + info.name + ".mp3").getAbsolutePath();
+						succ = Util.changeLocalSourceToMp3(file.getAbsolutePath(), realPath);
+						file.delete();
+					}
 				}
 				try {
 					loc.input.close();
@@ -124,7 +131,12 @@ public class SongSearchItem extends LTableItem {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				PlayUI.getInstance().addFile(file.getAbsolutePath(),false);
+				if(succ) {
+					PlayUI.getInstance().addFile(realPath,false);
+				} else {
+					downloadFailed("下载失败，可能是版权问题导致。");
+				}
+				
 				persent=0;
 				downloading=false;
 				flush();

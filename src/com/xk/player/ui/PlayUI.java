@@ -697,12 +697,15 @@ public class PlayUI implements BasicPlayerListener{
 			
 			@Override
 			public void itemRemove(ItemEvent e) {
+			}
+
+			@Override
+			public void itemRemoved(ItemEvent e) {
 				SongItem item=(SongItem) e.item;
 				removeFile(item.getProperty().get("path"));
 				if(item.isSelected()) {
 					playNext();
 				}
-				
 			}
 		};
 		
@@ -876,7 +879,10 @@ public class PlayUI implements BasicPlayerListener{
 					item.setHead(SWTTools.scaleImage(img[0], 50, 50));
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
-							item.getParent().flush();
+							MyList list = item.getParent();
+							if(null != list) {
+								list.flush();
+							}
 						}
 					});
 				}
@@ -938,22 +944,22 @@ public class PlayUI implements BasicPlayerListener{
 		} else {
 			return;
 		}
-		File file=new File(path);
+		File file = new File(path);
 		if(file.exists()&&file.isFile()){
 			Config config=Config.getInstance();
 			Map<String,String>pro=config.maps.get(path);
 			
-			if(null==pro){
+			if(null == pro){
 				System.out.println("no properties found:"+path);
 				pro=new HashMap<String, String>();
 			}
-			String artist=file.getName().split("-")[0].trim();
+			String artist = file.getName().split("-")[0].trim();
 			pro.put("artist", artist);
 			config.maps.put(path, pro);
-			String name=file.getName();
+			String name = file.getName();
 			pro.put("name", name.substring(0, name.lastIndexOf(".")));
 			pro.put("path", path);
-			SongItem item=new SongItem(pro);
+			SongItem item = new SongItem(pro);
 			currentList.addItem(item);
 			if(!sync){
 				Display.getDefault().asyncExec(new Runnable() {
@@ -1012,20 +1018,27 @@ public class PlayUI implements BasicPlayerListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		if(player.getStatus()==PLAYING){
+			try {
+				player.stop();
+			} catch (BasicPlayerException e) {
+			}
+			playButton.setToolTipText("播放");
+		}
 		System.out.println("playnext : currentPlay = " + currentPlay);
 		MyList current = list.get(types.getItems().get(currentPlay));
 		if(current.getItemCount() == 0) {
 			System.out.println("no item found");
 			return;
 		}
-		int now=current.getSelectIndex();
-		int size=current.getItemCount();
-		if(pModel==0){
-			if(++now>=size){
-				now=0;
+		int now = current.getSelectIndex();
+		int size = current.getItemCount();
+		if(pModel == 0){
+			if(++now >= size){
+				now = 0;
 			}
-		}else if(pModel==1){
-			now= new Random().nextInt(size);
+		}else if(pModel == 1){
+			now = new Random().nextInt(size);
 		}
 		
 		current.select(now,true);
@@ -1131,7 +1144,19 @@ public class PlayUI implements BasicPlayerListener{
 		jumpedMillan = 0;
 		timeNow = 0;
 		audioInfo = properties;
-		final long all = "Monkey's Audio (ape)".equals(properties.get("audio.type")) ? (Long) properties.get("duration") : (Long) properties.get("duration") / 1000;
+		long temp = "Monkey's Audio (ape)".equals(properties.get("audio.type")) ? (Long) properties.get("duration") : (Long) properties.get("duration") / 1000;
+		if(0 == temp) {
+			if(null != properties.get("audio.length.bytes") && null != properties.get("mp3.framesize.bytes")
+					&& null != properties.get("mp3.framerate.fps")) {
+				Long bytesAll = (Long) properties.get("audio.length.bytes");
+				Integer bytePf = (Integer) properties.get("mp3.framesize.bytes");
+				Float fps = (Float) properties.get("mp3.framerate.fps");
+				int seconds = ((Float)(bytesAll / bytePf / fps)).intValue();
+				temp = seconds * 1000;
+			}
+		}
+		final long all = temp;
+		
 		jindutiao.setSubProgress(-1d);
 		jindutiao.setAll( (all));
 		jindutiao.setPersent(0d,true);

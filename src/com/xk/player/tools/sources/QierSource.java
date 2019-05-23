@@ -229,7 +229,7 @@ public class QierSource implements IDownloadSource {
 //					http://dl.stream.qqmusic.qq.com/O600002u0fTY2HoJJp.ogg?guid=C826904CDC2ECC23102565710E2AB7C0&vkey=E03F6F84EDBDB98C8DE3A7897ED9360777F7324274FCDF53D1FDCA596385991E8C13BD30F0141C1C68B7856D0DA9D0752B4C2916E43DBED0&uin=3861&fromtag=77
 //					url = String.format("http://dl.stream.qqmusic.qq.com/M800%s.mp3?vkey=%s&guid=%s&fromtag=76&&uin=3861",
 //									new Object[] { url, vkey, guid });
-					url = String.format("http://182.247.250.19/streamoc.music.tc.qq.com/M500%s.mp3?vkey=%s&guid=%s&fromtag=0",
+					url = String.format("http://182.247.250.19/streamoc.music.tc.qq.com/C400%s.m4a?vkey=%s&guid=%s&fromtag=0&uin=3861",
 							new Object[] { url, vkey, guid });
 					headers = hs;
 					urlFound = true;
@@ -248,7 +248,7 @@ public class QierSource implements IDownloadSource {
 				
 			};
 			info.name = ((String) map.get("songname"));
-			info.type = "mp3";
+			info.type = "m4a";
 			info.length = Long.valueOf(Long.parseLong(map.get("interval")
 					.toString()) * 1000L * 1000L);
 			info.album = ((String) map.get("albumname"));

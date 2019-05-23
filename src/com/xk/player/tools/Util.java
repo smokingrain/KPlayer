@@ -4,6 +4,10 @@
  */
 package com.xk.player.tools;
 
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncodingAttributes;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -49,7 +53,26 @@ public final class Util {
     }
 
 
+    public static boolean changeLocalSourceToMp3(String localFilePath, String targetPath) {
 
+		File source = new File(localFilePath);
+		File target = new File(targetPath);
+		AudioAttributes audio = new AudioAttributes();
+		Encoder encoder = new Encoder();
+
+		audio.setCodec("libmp3lame");
+		EncodingAttributes attrs = new EncodingAttributes();
+		attrs.setFormat("mp3");
+		attrs.setAudioAttributes(audio);
+		try {
+			encoder.encode(source, target, attrs);
+			return true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 
     /**

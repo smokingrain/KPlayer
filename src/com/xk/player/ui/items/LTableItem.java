@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.MessageBox;
 
 import com.xk.player.tools.FileUtils;
 
@@ -106,6 +107,20 @@ public abstract class LTableItem extends ListItem {
 		});
 	}
 
+	
+	protected void downloadFailed(String msg) {
+		Display.getDefault().asyncExec(new Runnable() {
+			
+			@Override
+			public void run() {
+				MessageBox mb = new MessageBox(getParent().getShell(), SWT.ERROR);
+				mb.setText("下载失败");
+				mb.setMessage(msg);
+				mb.open();
+			}
+		});
+	}
+	
 	protected abstract void download();
 	
 }
