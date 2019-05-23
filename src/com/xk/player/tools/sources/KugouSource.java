@@ -151,11 +151,19 @@ public class KugouSource implements IDownloadSource {
 						String url = "http://www.kugou.com/yy/index.php";
 						List<HttpRequestParam> params = new ArrayList<HttpRequestParam>();
 //						Map<String, String> params = new HashMap<>();
+						String callBack = "jQuery191040681639104150256_" + System.currentTimeMillis();
 						params.add(HttpRequestParam.put("r", "play/getdata"));
+						params.add(HttpRequestParam.put("platid", "4"));
+						params.add(HttpRequestParam.put("dfid", "4Vyhka0JsPzT0DLMy10TfJPj"));
+						params.add(HttpRequestParam.put("mid", "122dc1e8e26152d6ec1aca669ca448d3"));
+						params.add(HttpRequestParam.put("callback", callBack));
 						params.add(HttpRequestParam.put("hash", this.url));
 						params.add(HttpRequestParam.put("album_id", "" + minfo.get("AlbumID")));
 						params.add(HttpRequestParam.put("_", String.valueOf(System.currentTimeMillis())));
-						String rst = HTTPUtil.getInstance("test").getHtml(url, params);
+						String rst = HTTPUtil.getInstance("search").getHtml(url, params);
+						if(null != rst) {
+							rst = rst.substring(callBack.length() + 1, rst.length() - 1 );
+						}
 						Map<String, Object> map = JSONUtil.fromJson(rst);
 						this.urlFound = true;
 						this.url = (String) ((Map<String, Object>)map.get("data")).get("play_url");

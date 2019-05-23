@@ -549,6 +549,8 @@ class ArrowDraw implements Drawable{
 		}
 		Color old = gc.getBackground();
 		Color oldFore = gc.getForeground();
+		gc.setAdvanced(true);
+		gc.setAntialias(SWT.ON);
 		gc.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
 		gc.setForeground(SWTResourceManager.getColor(SWT.COLOR_DARK_RED));
 		gc.fillPolygon(new int[]{target.x, target.y, points[0].x, points[0].y, points[1].x, points[1].y});

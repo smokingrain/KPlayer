@@ -61,16 +61,16 @@ public class CutScreen implements ICallback{
 	 */
 	protected void createContents() {
 		Rectangle rect = display.getBounds();
-		shell = new Shell(SWT.FILL);
-		shell.setBounds(-1, -1, rect.width + 2, rect.height + 2);
-		shell.setText("SWT Application");
-		SWTTools.topWindow(shell);
-        Image temps = new Image(display, rect.width, rect.height);  
+		Image temps = new Image(display, rect.width, rect.height);  
         GC gc = new GC(display);  
         gc.copyArea(temps, 0, 0);  
         gc.dispose();  
+		shell = new Shell(SWT.FILL);
+		shell.setBounds(-1, -1, rect.width + 2, rect.height + 2);
+		shell.setText("SWT Application");
         ScreenCanvas ts = new ScreenCanvas(shell, temps, this);
 		ts.setBounds(rect);
+		SWTTools.topWindow(shell);
 //		SWTTools.enableTrag(ts);
 	}
 

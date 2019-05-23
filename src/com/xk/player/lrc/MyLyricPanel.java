@@ -4,6 +4,7 @@
  */
 package com.xk.player.lrc;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -179,7 +180,8 @@ public class MyLyricPanel extends JPanel implements Runnable , BasicPlayerListen
 		}
         if(null!=other){//绘制下一句歌词
         	Graphics2D gc=(Graphics2D) g.create();
-        	gc.setPaint(new Color(config.dbr, config.dbg, config.dbb));
+        	Color co = new Color(config.dbr, config.dbg, config.dbb);
+        	gc.setPaint(co);
         	FontMetrics fm=gc.getFontMetrics();
         	GlyphVector gv=ft.createGlyphVector(fm.getFontRenderContext(), other.getWord());
         	Shape shape=gv.getOutline();

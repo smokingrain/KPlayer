@@ -193,7 +193,7 @@ public class QierSource implements IDownloadSource {
 					Header[] hs = {
 							new BasicHeader("Origin", "http://y.qq.com/"),
 							new BasicHeader("Referer", "http://y.qq.com/") };
-					String guid = String
+					String guid =  String
 							.valueOf(Math.floor(Math.random() * 1.0E9D));
 					String tracyUrl = "https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg";
 					Map<String, String> tracyParams = new HashMap();
@@ -211,10 +211,9 @@ public class QierSource implements IDownloadSource {
 					tracyParams.put("platform", "yqq");
 					tracyParams.put("needNewCode", "0");
 					tracyParams.put("cid", "205361747");
-					tracyParams.put("uin", "1297716249");
+					tracyParams.put("uin", "3861");
 					tracyParams.put("songmid", url);
 					tracyParams.put("filename", "C400" + url + ".m4a");
-					tracyParams.put("guid", guid);
 					tracyParams.put("guid", guid);
 					String text = HTTPUtil.getInstance("search").getHtml(
 							tracyUrl, tracyParams, hs);
@@ -227,10 +226,11 @@ public class QierSource implements IDownloadSource {
 							.format("https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg?callback=MusicJsonCallback_lrc&pcachetime=%s&songmid=%s&g_tk=5381&jsonpCallback=MusicJsonCallback_lrc&loginUin=0&hostUin=0&format=jsonp&inCharset=utf8&outCharset=utf-8&notice=0&platform=yqq&needNewCode=0",
 									new Object[] { System.currentTimeMillis(),
 											url });
-
-					url = String.format("http://dl.stream.qqmusic.qq.com/M800%s.mp3?vkey=%s&guid=%s&fromtag=53",
-									new Object[] { url, vkey, guid });
-
+//					http://dl.stream.qqmusic.qq.com/O600002u0fTY2HoJJp.ogg?guid=C826904CDC2ECC23102565710E2AB7C0&vkey=E03F6F84EDBDB98C8DE3A7897ED9360777F7324274FCDF53D1FDCA596385991E8C13BD30F0141C1C68B7856D0DA9D0752B4C2916E43DBED0&uin=3861&fromtag=77
+//					url = String.format("http://dl.stream.qqmusic.qq.com/M800%s.mp3?vkey=%s&guid=%s&fromtag=76&&uin=3861",
+//									new Object[] { url, vkey, guid });
+					url = String.format("http://182.247.250.19/streamoc.music.tc.qq.com/M500%s.mp3?vkey=%s&guid=%s&fromtag=0",
+							new Object[] { url, vkey, guid });
 					headers = hs;
 					urlFound = true;
 					return url;
