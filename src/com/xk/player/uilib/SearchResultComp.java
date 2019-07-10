@@ -115,7 +115,7 @@ public class SearchResultComp extends Composite implements ICallable<String>{
 				
 				@Override
 				public void run() {
-					String url = info.getUrl();
+					String url = info.getLrcUrl();
 					String html = HTTPUtil.getInstance("player").getHtml(url, info.headers);
 					persent = 30;
 					flush();

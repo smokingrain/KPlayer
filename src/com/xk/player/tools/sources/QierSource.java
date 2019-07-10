@@ -140,7 +140,12 @@ public class QierSource implements IDownloadSource {
 	    params.put("notice", "0");
 	    params.put("platform", "h5");
 	    params.put("needNewCode", "1");
-	    params.put("w", name);
+	    try {
+			params.put("w", URLEncoder.encode(name, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    params.put("zhidaqu", "1");
 	    params.put("catZhida", "1");
 	    params.put("t", searchType);

@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 
-public class SearchComp extends Composite implements ICallable{
+public class SearchComp extends Composite implements ICallable<String>{
 	private MyText text;
-	private ICallback callback;
+	private ICallback<String> callback;
 
 	/**
 	 * Create the composite.
@@ -21,6 +21,10 @@ public class SearchComp extends Composite implements ICallable{
 	 */
 	public SearchComp(Composite parent, int style,String name) {
 		super(parent, style);
+		
+		if(null != name && name.contains("-") && !name.endsWith("-")) {
+			name = name.substring(name.indexOf("-") + 1, name.length()).trim();
+		}
 		setBackgroundImage(parent.getParent().getBackgroundImage());
 		setBackgroundMode(SWT.INHERIT_DEFAULT);
 		
@@ -87,7 +91,7 @@ public class SearchComp extends Composite implements ICallable{
 	}
 
 	@Override
-	public void setCallBack(ICallback callBack) {
+	public void setCallBack(ICallback<String> callBack) {
 		this.callback=callBack;
 	}
 }

@@ -26,8 +26,20 @@ public class KuwoSource implements IDownloadSource {
 	
 	@Override
 	public List<XRCLine> parse(String content) {
-		LrcInfo info = SongSeacher.perseFromHTML(content);
-		return new LrcParser((long)Integer.MAX_VALUE).toXrc(info);
+		Map<String, Object> map = JSONUtil.fromJson(content);
+		List<Map<String, Object>> lrcs = (List<Map<String, Object>>) ((Map<String, Object>)map.get("data")).get("lrclist");
+		LrcInfo lrc = new LrcInfo();
+		Map<Long, String> infos = new HashMap<Long, String>();
+		for(Map<String, Object> lrcObj : lrcs) {
+			String time = (String) lrcObj.get("time");
+			double dtime = Double.parseDouble(time);
+			long ltime = (long) (dtime * 1000);
+			String text = (String) lrcObj.get("lineLyric");
+			infos.put(ltime, text);
+		}
+		
+		lrc.setInfos(infos);
+		return new LrcParser((long)Integer.MAX_VALUE).toXrc(lrc);
 	}
 
 	@Override
@@ -70,7 +82,11 @@ public class KuwoSource implements IDownloadSource {
 
 					@Override
 					public String getLrcUrl() {
-						return "";
+						if(urlFound) {
+							return lrcUrl;
+						}
+						lrcUrl = "http://m.kuwo.cn/newh5/singles/songinfoandlrc?musicId=" + url;
+						return lrcUrl;
 					}
 					
 				};
@@ -90,6 +106,15 @@ public class KuwoSource implements IDownloadSource {
 					Elements as=singer.getElementsByTag("a");
 					for(Element a:as){
 						info.singer=a.attr("title");
+						break;
+					}
+					break;
+				}
+				Elements numbers = ele.getElementsByAttributeValue("class", "number");
+				for(Element number:numbers){
+					Elements as = number.getElementsByTag("input");
+					for(Element a:as){
+						info.url = a.attr("mid");
 						break;
 					}
 					break;

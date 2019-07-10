@@ -241,7 +241,7 @@ public class NetEasySource implements IDownloadSource {
 
 							@Override
 							public String getLrcUrl() {
-								return "";
+								return getUrl();
 							}
 							
 						};
@@ -496,7 +496,12 @@ public class NetEasySource implements IDownloadSource {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("csrf_token", "");
 		params.put("type", "1");
-		params.put("s", name);
+		try {
+			params.put("s", URLEncoder.encode(name, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		String json = JSONUtil.toJson(params);
 		Map<String, String> p = EncryptUtils.encrypt(json);
 		List<BasicNameValuePair> fromparams = new ArrayList<BasicNameValuePair>();

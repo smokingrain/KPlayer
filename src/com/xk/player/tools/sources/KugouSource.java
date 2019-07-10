@@ -1,5 +1,7 @@
 package com.xk.player.tools.sources;
 
+import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -19,6 +21,8 @@ import com.xk.player.tools.ByteUtil;
 import com.xk.player.tools.HTTPUtil;
 import com.xk.player.tools.HttpRequestParam;
 import com.xk.player.tools.JSONUtil;
+import com.xk.player.tools.LrcInfo;
+import com.xk.player.tools.LrcParser;
 import com.xk.player.tools.SongLocation;
 
 public class KugouSource implements IDownloadSource {
@@ -27,7 +31,14 @@ public class KugouSource implements IDownloadSource {
 	
 	@Override
 	public List<XRCLine> parse(String content) {
-		return new ArrayList<XRCLine>();
+		content = content.substring(42, content.length() -1 );
+		Map<String, Object> map = JSONUtil.fromJson(content);
+		String lrcText = (String) ((Map<String, Object>)map.get("data")).get("lyrics");
+		int length = (int) ((Map<String, Object>)map.get("data")).get("timelength");
+		LrcParser parser = new LrcParser((long) length);
+		StringReader sr = new StringReader(lrcText);
+		List<XRCLine> lines = parser.parserToXrc(sr);
+		return lines;
 	}
 
 	@Override
@@ -37,7 +48,7 @@ public class KugouSource implements IDownloadSource {
 
 	@Override
 	public List<SearchInfo> getLrc(String name) {
-		return Collections.emptyList();
+		return getSong(name);
 	}
 
 	@Override
@@ -120,7 +131,7 @@ public class KugouSource implements IDownloadSource {
 			searchUrl = "http://songsearch.kugou.com/song_search_v2";
 			Map<String, String> params = new HashMap<String, String>();
 			params.put("callback", callBack);
-			params.put("keyword", name);
+			params.put("keyword", URLEncoder.encode(name, "UTF-8"));
 			params.put("page", "1");
 			params.put("pagesize", "30");
 			params.put("userid", "-1");
@@ -172,7 +183,32 @@ public class KugouSource implements IDownloadSource {
 
 					@Override
 					public String getLrcUrl() {
-						return null;
+						if(this.urlFound) {
+							return lrcUrl;
+						}
+						String url = "http://www.kugou.com/yy/index.php";
+						List<HttpRequestParam> params = new ArrayList<HttpRequestParam>();
+//						Map<String, String> params = new HashMap<>();
+						String callBack = "jQuery191040681639104150256_" + System.currentTimeMillis();
+						params.add(HttpRequestParam.put("r", "play/getdata"));
+						params.add(HttpRequestParam.put("platid", "4"));
+						params.add(HttpRequestParam.put("dfid", "4Vyhka0JsPzT0DLMy10TfJPj"));
+						params.add(HttpRequestParam.put("mid", "122dc1e8e26152d6ec1aca669ca448d3"));
+						params.add(HttpRequestParam.put("callback", callBack));
+						params.add(HttpRequestParam.put("hash", this.url));
+						params.add(HttpRequestParam.put("album_id", "" + minfo.get("AlbumID")));
+						params.add(HttpRequestParam.put("_", String.valueOf(System.currentTimeMillis())));
+						if(null != params) {
+							StringBuffer sb = new StringBuffer();
+							sb.append("?");
+							for(HttpRequestParam param : params) {
+								sb.append(param.key).append("=").append(param.value).append("&");
+							}
+							url += sb.toString();
+						}
+						lrcUrl = url;
+						this.urlFound = true;
+						return lrcUrl;
 					}
 				};
 				songs.add(info);

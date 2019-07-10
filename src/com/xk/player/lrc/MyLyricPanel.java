@@ -14,7 +14,6 @@ import java.awt.LinearGradientPaint;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.font.GlyphVector;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -28,11 +27,6 @@ import com.xk.player.core.BasicController;
 import com.xk.player.core.BasicPlayerEvent;
 import com.xk.player.core.BasicPlayerListener;
 import com.xk.player.tools.Config;
-import com.xk.player.tools.FileUtils;
-import com.xk.player.tools.JSONUtil;
-import com.xk.player.tools.KrcText;
-import com.xk.player.tools.LRCFactory;
-import com.xk.player.tools.LrcParser;
 import com.xk.player.tools.Util;
 import com.xk.player.ui.PlayUI;
 import com.xk.player.ui.items.SongItem;
@@ -149,7 +143,7 @@ public class MyLyricPanel extends JPanel implements Runnable , BasicPlayerListen
 		}
     	if(config.isDied()) {
 			config = Config.getInstance();
-		 }
+		}
     	int lastCur = cur;
     	long time=ui.getLrcOffset()+nowTime;//获取当前歌曲时间，加上前进后退值
     	cur=findCur(time);
@@ -181,7 +175,7 @@ public class MyLyricPanel extends JPanel implements Runnable , BasicPlayerListen
         if(null!=other){//绘制下一句歌词
         	Graphics2D gc=(Graphics2D) g.create();
         	Color co = new Color(config.dbr, config.dbg, config.dbb);
-        	gc.setPaint(co);
+        	gc.setColor(co);
         	FontMetrics fm=gc.getFontMetrics();
         	GlyphVector gv=ft.createGlyphVector(fm.getFontRenderContext(), other.getWord());
         	Shape shape=gv.getOutline();
@@ -191,6 +185,12 @@ public class MyLyricPanel extends JPanel implements Runnable , BasicPlayerListen
         		gc.translate(50, 50+fm.getAscent());
         	}
         	gc.fill(shape);
+        	if(config.stroke) {
+        		gc.setColor(new Color(0x1f, 0x1f, 0x1f));
+            	gc.setStroke(new BasicStroke(config.dfontSize * 0.01f));
+            	gc.draw(shape);
+        	}
+        	
         }
         int now=0;
         for(int i=currentLine.nodes.size()-1;i>=0;i--){//获取当前这句歌词到第几个字
@@ -206,19 +206,29 @@ public class MyLyricPanel extends JPanel implements Runnable , BasicPlayerListen
         	off+=Util.getStringWidth(node.word, g);
         }
         if(currentLine.nodes.size()>0&&currentLine.start!=null&&currentLine.length!=null){
-        	 XRCNode node=currentLine.nodes.get(now);
-             float percent=(float)(time-(currentLine.start+node.start))/node.length;
-             if(percent>1){
-            	 percent=1;
-             }
-             off+=Util.getStringWidth(node.word,g)*percent;
-             int baseLeft=isUp?50:100;
-             if(off<=0){
-            	 off=1;
-             }
-             
-             g.setPaint(new LinearGradientPaint(baseLeft, 0f,(isUp?50:100)+off , 0f, new float[]{0.98f, 1f}, new Color[]{new Color(config.dcr, config.dcg, config.dcb), new Color(config.dbr, config.dbg, config.dbb)}));
-             Util.drawString(g.create(), currentLine.getWord(), baseLeft,(isUp?50:100));
+			XRCNode node=currentLine.nodes.get(now);
+			float percent=(float)(time-(currentLine.start+node.start))/node.length;
+			if(percent>1){
+				percent=1;
+			}
+			off+=Util.getStringWidth(node.word,g)*percent;
+			int baseLeft=isUp?50:100;
+			if(off<=0){
+				off=1;
+			}
+			
+			g.setPaint(new LinearGradientPaint(baseLeft, 0f,(isUp?50:100)+off , 0f, new float[]{0.98f, 1f}, new Color[]{new Color(config.dcr, config.dcg, config.dcb), new Color(config.dbr, config.dbg, config.dbb)}));
+			Util.drawString(g.create(), currentLine.getWord(), baseLeft,(isUp?50:100));
+			if(config.stroke) {
+				FontMetrics fm = g.getFontMetrics();
+				g.translate(baseLeft,(isUp?50:100) + fm.getAscent());
+				GlyphVector gv=ft.createGlyphVector(fm.getFontRenderContext(), currentLine.getWord());
+				Shape shape=gv.getOutline();
+				g.setColor(new Color(0x1f, 0x1f, 0x1f));
+	        	g.setStroke(new BasicStroke(config.dfontSize * 0.01f));
+	        	g.draw(shape);
+			}
+			
         }
         if(first){
         	first=false;

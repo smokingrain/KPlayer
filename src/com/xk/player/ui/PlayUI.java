@@ -39,6 +39,8 @@ import com.xk.player.core.BasicPlayerEvent;
 import com.xk.player.core.BasicPlayerException;
 import com.xk.player.core.BasicPlayerListener;
 import com.xk.player.lrc.LyricFrame;
+import com.xk.player.lrc.NormalWord;
+import com.xk.player.lrc.XRCLine;
 import com.xk.player.ole.flash.Flash;
 import com.xk.player.tools.ByteUtil;
 import com.xk.player.tools.Config;
@@ -1268,4 +1270,9 @@ public class PlayUI implements BasicPlayerListener{
 		return (m<10?("0"+m):m)+":"+(second<10?"0"+second:second);
 	}
 
+	public void resetLines(List<XRCLine> lines) {
+		lFrame.setLines(lines);
+		lrcWord.setLines(lines);
+	}
+	
 }

@@ -1,9 +1,11 @@
 package com.xk.player.ui.settings;
 
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FontDialog;
 
 import com.xk.player.tools.Config;
+
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Label;
@@ -37,6 +39,7 @@ public class LrcSettingComp extends SettingParent {
 	private Canvas preViewDesk;
 	private Label lFontNameDesk;
 	private Label lFontStyleDesk;
+	private Button btStroke;
 	
 	public LrcSettingComp(Composite composite, int i) {
 		super(composite, i);
@@ -125,7 +128,7 @@ public class LrcSettingComp extends SettingParent {
 		
 		Group group = new Group(this, SWT.NONE);
 		group.setText("桌面歌词");
-		group.setBounds(10, 126, 303, 110);
+		group.setBounds(10, 126, 303, 120);
 		
 		Label label_4 = new Label(group, SWT.NONE);
 		label_4.setText("歌词字体：");
@@ -187,13 +190,23 @@ public class LrcSettingComp extends SettingParent {
 		label_12.setBounds(10, 67, 61, 17);
 		
 		preViewDesk = new Canvas(group, SWT.NONE);
-		preViewDesk.setBounds(82, 62, 211, 38);
+		preViewDesk.setBounds(82, 62, 211, 25);
 		
 		lFontNameDesk = new Label(group, SWT.NONE);
 		lFontNameDesk.setBounds(84, 21, 61, 17);
 		
 		lFontStyleDesk = new Label(group, SWT.NONE);
 		lFontStyleDesk.setBounds(160, 21, 61, 17);
+		
+		Label lbStroke = new Label(group, SWT.NONE);
+		lbStroke.setText("描边：");
+		lbStroke.setAlignment(SWT.RIGHT);
+		lbStroke.setBounds(10, 90, 61, 17);
+		
+		btStroke = new Button(group, SWT.CHECK);
+		btStroke.setText("桌面歌词描边");
+		btStroke.setAlignment(SWT.LEFT);
+		btStroke.setBounds(72, 90, 150, 20);
 		
 		PreviewPaintListener listenerDesk = new PreviewPaintListener();
 		listenerDesk.b = lbColorDesk;
@@ -263,6 +276,7 @@ public class LrcSettingComp extends SettingParent {
 		config.dfontStyle = fdDesk.getStyle();
 		int dsize = fdDesk.getHeight();
 		config.dfontSize = dsize > 36 ? 36 : dsize;
+		config.stroke = btStroke.getSelection();
 	}
 
 	@Override
@@ -305,6 +319,7 @@ public class LrcSettingComp extends SettingParent {
 			break;
 			default:break;
 		}
+		btStroke.setSelection(config.stroke);
 		
 	}
 	

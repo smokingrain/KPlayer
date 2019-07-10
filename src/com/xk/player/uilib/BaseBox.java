@@ -6,7 +6,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.custom.StackLayout;
 
-public class BaseBox extends MessageBox implements ICallback{
+public class BaseBox extends MessageBox implements ICallback<Object>{
 
 	protected Object result;
 	protected Shell shell;
@@ -59,7 +59,7 @@ public class BaseBox extends MessageBox implements ICallback{
 		StackLayout lo=(StackLayout)(shell.getLayout());
 		lo.topControl=com;
 		if(com instanceof ICallable){
-			ICallable dc=(ICallable) com;
+			ICallable<Object> dc=(ICallable<Object>) com;
 			dc.setCallBack(this);
 		}
 	}

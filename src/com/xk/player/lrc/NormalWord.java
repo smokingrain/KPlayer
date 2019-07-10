@@ -1,4 +1,4 @@
-package com.xk.player.ui;
+package com.xk.player.lrc;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.LineAttributes;
 import org.eclipse.swt.graphics.Path;
 import org.eclipse.swt.graphics.Pattern;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Region;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -29,19 +30,27 @@ import com.xk.hook.HotKeys;
 import com.xk.player.core.BasicController;
 import com.xk.player.core.BasicPlayerEvent;
 import com.xk.player.core.BasicPlayerListener;
-import com.xk.player.lrc.XRCLine;
-import com.xk.player.lrc.XRCNode;
 import com.xk.player.tools.Config;
 import com.xk.player.tools.FileUtils;
+import com.xk.player.tools.HTTPUtil;
 import com.xk.player.tools.JSONUtil;
 import com.xk.player.tools.KrcText;
 import com.xk.player.tools.LRCFactory;
 import com.xk.player.tools.LrcParser;
+import com.xk.player.tools.SourceFactory;
+import com.xk.player.tools.sources.IDownloadSource;
+import com.xk.player.tools.sources.IDownloadSource.SearchInfo;
+import com.xk.player.ui.CutScreen;
+import com.xk.player.ui.PlayUI;
 import com.xk.player.ui.items.SongItem;
 
 import org.eclipse.wb.swt.SWTResourceManager;
 
-
+/**
+ * 普通歌词面板
+ * @author Administrator
+ *
+ */
 public class NormalWord extends Canvas implements PaintListener,BasicPlayerListener,HotKeyListener{
 
 	private List<XRCLine>lines;
@@ -56,8 +65,9 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 	private PlayUI ui;
 	private boolean drawing=false;
 	private String songName ="";
-	private Config config = Config.getInstance();
+//	private Config config = Config.getInstance();
 	private Long allLength;
+	private Long sign;
 	
 	
 	public NormalWord(Composite parent,PlayUI ui) {
@@ -164,9 +174,9 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 	}
 
 	private void drawSongName(GC g){
-		if(config.isDied()) {
-			config = Config.getInstance();
-		}
+//		if(config.isDied()) {
+		Config config = Config.getInstance();
+//		}
 		Font ft=SWTResourceManager.getFont( "楷体", config.fontSize, SWT.NORMAL);
 		Point songWidth=g.stringExtent(songName);
         g.setFont(ft);
@@ -190,9 +200,9 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 	
 	
 	private void drawXRC(GC g){
-		if(config.isDied()) {
-			config = Config.getInstance();
-		}
+//		if(config.isDied()) {
+		Config config = Config.getInstance();
+//		}
 		long timeOffset=ui.getLrcOffset();
 		long time=nowTime+timeOffset;
 		cur=findCur(time);
@@ -235,6 +245,7 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
         		break;
         	}
         }
+        
         float off=0;
         for(int i=0;i<now;i++){//计算位移
         	XRCNode node=currentLine.nodes.get(i);
@@ -297,6 +308,7 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 	@Override
 	public void opened(Object stream, Map<String,Object> properties) {
 		nowTime=0;
+		sign = System.currentTimeMillis();
 		setLines(null);
 		cur=0;
 		pause(false);
@@ -304,7 +316,51 @@ public class NormalWord extends Canvas implements PaintListener,BasicPlayerListe
 		SongItem item = (SongItem) properties.get("songitem");
 		if(null != item){
 			loadLrc(item);
+			if(null == lines) {
+				new AsyncLoadLyric(this, songName, sign).start();
+			}
 		}
+	}
+	
+	private class AsyncLoadLyric extends Thread{
+		private NormalWord nw;
+		private String name;
+		private Long sign;
+		
+		AsyncLoadLyric(NormalWord nw, String name, Long sign) {
+			this.name = name;
+			this.nw = nw;
+			this.sign = sign;
+		}
+		
+		@Override
+		public void run() {
+			String singer = "";
+			String song = "";
+			if(name.contains("")) {
+				singer = (name.startsWith("-") ? "" : name.substring(0, name.indexOf("-"))).trim();
+				song = (name.endsWith("-") ? name : name.substring(name.indexOf("-") + 1, name.length())).trim();
+			} else {
+				song = name;
+			}
+			IDownloadSource ids = SourceFactory.getSource(Config.getInstance().downloadSource);
+			List<SearchInfo> lrcs = ids.getLrc(song);
+			for(SearchInfo info : lrcs) {
+				if(song.equalsIgnoreCase(info.name)) {
+					if(singer.isEmpty() || singer.equals(info.singer)) {
+						String url = info.getLrcUrl();
+						String html = HTTPUtil.getInstance("player").getHtml(url, info.headers);
+						List<XRCLine> rst = ids.parse(html);
+						if(sign == nw.sign) {
+							PlayUI.getInstance().resetLines(rst);
+						}
+						return;
+					}
+				}
+			}
+		}
+		
+		
 	}
 
 	@Override
