@@ -43,6 +43,8 @@ import com.xk.player.uilib.ICallback;
  */
 public class ScreenCanvas extends Canvas implements PaintListener{
 
+	public static int DRAW_FLAGS = SWT.DRAW_MNEMONIC | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT | SWT.DRAW_DELIMITER;
+	
 	private Shell parent;
 	private Image base;
 	private STATUS status = STATUS.NONE;
@@ -389,7 +391,31 @@ public class ScreenCanvas extends Canvas implements PaintListener{
 			}
 			gc.setAlpha(alpha);
 			drawRect(gc, width, rect);
+			drawSize(gc, rect);
 		}
+	}
+	
+	/**
+	 * 绘制选中区域宽高
+	 * 作者 ：肖逵
+	 * 时间 ：2019年7月10日 上午10:15:17
+	 * @param gc
+	 * @param rect
+	 */
+	private void drawSize(GC gc, Rectangle rect) {
+		int height = gc.getFontMetrics().getHeight();
+		Point target = new Point(rect.x + 3, rect.y < 100 ? rect.y + 3 : rect.y - (height + 9));
+		Color back = gc.getBackground();
+		int alpha = gc.getAlpha();
+		String text = rect.width + " x " + rect.height;
+		Point textSize = gc.textExtent(text, DRAW_FLAGS);
+		gc.setBackground(SWTResourceManager.getColor(0x33, 0x33, 0x33));
+		gc.setAlpha(200);
+		gc.fillRectangle(target.x, target.y, textSize.x + 5, (height + 6));
+		gc.setAlpha(alpha);
+		gc.setForeground(SWTResourceManager.getColor(0xff, 0xff, 0xff));
+		gc.drawText(text, target.x + 3, target.y + 3, DRAW_FLAGS);
+		gc.setBackground(back);
 	}
 	
 	
