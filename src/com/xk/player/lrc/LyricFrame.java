@@ -7,6 +7,7 @@
  */
 package com.xk.player.lrc;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -18,7 +19,6 @@ import java.util.List;
 
 import javax.swing.JWindow;
 
-import com.sun.awt.AWTUtilities;
 import com.xk.player.ui.PlayUI;
 
 
@@ -58,7 +58,7 @@ public class LyricFrame extends JWindow {
 	 */
 	public LyricFrame(PlayUI ui){
 		setVisible(false);
-		AWTUtilities.setWindowOpaque(this, false);
+		setBackground(new Color(0x00, 0x00, 0x00, 0));
 		Dimension dis= Toolkit.getDefaultToolkit().getScreenSize();
 		this.setLocation(0, (int)(dis.height*0.65));
 		this.setSize(dis.width, 150);

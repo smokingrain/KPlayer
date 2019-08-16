@@ -185,7 +185,9 @@ public class NetEasySource implements IDownloadSource {
 			e.printStackTrace();
 		} finally {
 			try {
-				response.close();
+				if(null != response) {
+					response.close();
+				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
