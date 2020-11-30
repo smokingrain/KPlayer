@@ -1,2 +1,0 @@
-2018-09-05 17:31:53.832 [Thread-11] INFO  org.apache.http.impl.execchain.RetryExec - I/O exception (java.net.SocketException) caught when processing request to {}->http://p1.music.126.net:80: Connection reset
-2018-09-05 17:31:53.857 [Thread-11] INFO  org.apache.http.impl.execchain.RetryExec - Retrying request to {}->http://p1.music.126.net:80
