@@ -1,29 +1,53 @@
 <Configuration status="WARN" monitorInterval="300">  
     <properties>  
         <property name="LOG_HOME">logs</property>  
-        <property name="FILE_NAME">client</property>  
+        <property name="FILE_NAME">KplayerInfo</property>  
+        <property name="ERROR_NAME">KplayerError</property>  
     </properties>  
     <Appenders>  
         <Console name="Console" target="SYSTEM_OUT">  
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />  
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%X{song}][%logger{36}]-[%-5level] %msg%n" />  
         </Console>  
-        <RollingRandomAccessFile name="FileTarget"  
+        <RollingRandomAccessFile name="FileTarget"  immediateFlush="true"
             fileName="${LOG_HOME}/${FILE_NAME}.log"  
-            filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd HH-mm}-%i.log">  
+            filePattern="${LOG_HOME}/${FILE_NAME}.%d{yyyyMMddHH}.%i.log">  
+            <Filters>
+                <ThresholdFilter level="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
             <PatternLayout  
-                pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />  
+                pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%X{song}][%logger{36}]-[%-5level] %msg%n" />  
             <Policies>  
                 <!-- <TimeBasedTriggeringPolicy interval="1" /> -->  
-                <SizeBasedTriggeringPolicy size="50 MB" />  
+                <SizeBasedTriggeringPolicy size="50 kB" />  
             </Policies>  
-            <DefaultRolloverStrategy max="20" />  
+           <DefaultRolloverStrategy max="5">
+            </DefaultRolloverStrategy>
         </RollingRandomAccessFile>  
+        
+        <RollingRandomAccessFile name="ErrorTarget" immediateFlush="true"
+            fileName="${LOG_HOME}/${ERROR_NAME}.log"
+            filePattern="${LOG_HOME}/${ERROR_NAME}.%d{yyyyMMddHH}.%i.log">
+
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            </Filters>
+
+            <PatternLayout pattern="[%d{yyyy-MM-dd HH:mm:ss.SSS}][%X{song}][%logger{36}]-[%-5level] %msg%n" />
+            <Policies>
+                <SizeBasedTriggeringPolicy size="50 KB"/>
+            </Policies>  
+
+            <DefaultRolloverStrategy max="5">
+                
+            </DefaultRolloverStrategy>
+        </RollingRandomAccessFile>
     </Appenders>  
   
     <Loggers>  
-        <Root level="info">  
+        <Root level="INFO">  
             <AppenderRef ref="Console" /> 
             <AppenderRef ref="FileTarget" />   
-        </Root>  
+            <AppenderRef ref="ErrorTarget" />   
+        </Root> 
     </Loggers>  
 </Configuration>  

@@ -49,7 +49,7 @@ public class BaseBox extends MessageBox implements ICallback<Object>{
 	 */
 	private void createContents(int x,int y) {
 		shell = new Shell(getParent(), getStyle());
-		shell.setSize(280, 360);
+		shell.setSize(x, y);
 		shell.setText(getText());
 		StackLayout stackLayout=new StackLayout();
 		shell.setLayout(stackLayout);

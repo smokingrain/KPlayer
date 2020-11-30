@@ -71,6 +71,7 @@ public class DownloadSettingComp extends SettingParent {
 		source.add("kuwo");
 		source.add("ne");
 		source.add("qier");
+		source.add("migu");
 	}
 	
 

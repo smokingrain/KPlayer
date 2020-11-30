@@ -1,5 +1,12 @@
 package com.xk.player.tools;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -69,6 +76,29 @@ public class SWTTools {
 			
 			
 		});
+	}
+	
+	public static Image AWTImg2SWTImg(BufferedImage base, String name) {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		try {
+			ImageIO.write(base, "png", out);
+		} catch (IOException e) {
+			System.out.println(name + "初始化失败！");
+			e.printStackTrace();
+			return null;
+		}
+		byte[] data = out.toByteArray();
+		ByteArrayInputStream in = new ByteArrayInputStream(data);
+		ImageData id = new ImageData(in);
+		try {
+			out.close();
+			in.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		Image img = new Image(null, id);
+		return img;
 	}
 	
 	public static void centerWindow(Shell shell){

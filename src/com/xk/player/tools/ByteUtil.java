@@ -1,7 +1,6 @@
 package com.xk.player.tools;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
 public class ByteUtil {  

@@ -24,18 +24,21 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CookieStore;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
 
 
 public class HTTPUtil {
-	public CloseableHttpClient httpClient = HttpClientUtils.createSSLClientDefault();
+	private BasicCookieStore cookieStore = new BasicCookieStore();
+	public CloseableHttpClient httpClient = HttpClientUtils.createSSLClientDefault(cookieStore);
 	public static String cid=null;
 	private static Map<String,HTTPUtil> maps=new HashMap<String,HTTPUtil>();
 	
@@ -64,6 +67,7 @@ public class HTTPUtil {
 			e.printStackTrace();
 		}
 	}
+	
 	
 	public String getHtml(String url, List<HttpRequestParam> params) {
 		if(null != params) {

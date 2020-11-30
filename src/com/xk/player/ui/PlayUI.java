@@ -11,11 +11,8 @@ import java.util.TimerTask;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import org.cmc.music.metadata.MusicMetadata;
-import org.cmc.music.metadata.MusicMetadataSet;
-import org.cmc.music.myid3.MyID3;
+import org.apache.log4j.MDC;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
@@ -25,9 +22,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
@@ -119,6 +113,7 @@ public class PlayUI implements BasicPlayerListener{
 	private int pModel=0;//播放模式，默认循序播放
 	
 	private long lrcOffset=0l;//歌词延迟，前进
+	
 	
 	private static PlayUI instance;
 	
@@ -444,8 +439,8 @@ public class PlayUI implements BasicPlayerListener{
 			@Override
 			public void mouseUp(MouseEvent arg0) {
 				FileDialog fd=new FileDialog(shell,SWT.NONE);
-				fd.setFilterExtensions(new String[]{"*.mp3","*.ape"});
-				fd.setFilterNames(new String[]{"MP3音乐文件","APE高品质音乐"});
+				fd.setFilterExtensions(new String[]{"*.mp3","*.ape", "*.flac"});
+				fd.setFilterNames(new String[]{"MP3音乐文件", "APE高品质音乐", "FLAC无损音质"});
 				fd.setText("添加音乐");
 				String path=fd.open();
 				if(null!=path&&!path.isEmpty()){
@@ -474,7 +469,8 @@ public class PlayUI implements BasicPlayerListener{
 							
 							@Override
 							public boolean accept(File dir, String name) {
-								return name.toLowerCase().endsWith(".mp3")||name.toLowerCase().endsWith(".ape");
+								return name.toLowerCase().endsWith(".mp3")||name.toLowerCase().endsWith(".ape")
+										|| name.toCharArray().equals(".flac");
 							}
 						});
 						for(String path:mp3s){
@@ -1071,6 +1067,7 @@ public class PlayUI implements BasicPlayerListener{
 		if(null != selected){
 			SongItem item = (SongItem) selected;
 			try {
+				MDC.put("song", item.getProperty().get("name"));
 				item.play(player);
 			} catch (Exception e1) {
 				e1.printStackTrace();
